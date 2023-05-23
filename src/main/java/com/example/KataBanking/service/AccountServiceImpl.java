@@ -2,6 +2,7 @@ package com.example.KataBanking.service;
 
 import com.example.KataBanking.entity.Account;
 import com.example.KataBanking.entity.Transaction;
+import com.example.KataBanking.enums.OperationType;
 import com.example.KataBanking.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,25 +31,41 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Account deposit(String accountNumber, BigDecimal amount) {
-        Optional<Account> account = accountRepository.findByAccountNumber(accountNumber);
-        if (account.isEmpty())
+        Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
+        if (accountOpt.isEmpty())
             throw new RuntimeException("Account not found");
         else{
-            account.get().deposit(amount);
-            accountRepository.save(account.get());
-            return account.get();
+            Account account = accountOpt.get();
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Amount must be greater than zero.");
+            }
+
+            account.setBalance(account.getBalance().add(amount));
+            account.getTransactions().add(new Transaction(OperationType.DEPOSIT, amount, account.getBalance(), account));
+            accountRepository.save(account);
+            return account;
         }
     }
 
     @Override
     public Account withdraw(String accountNumber, BigDecimal amount) {
-        Optional<Account> account = accountRepository.findByAccountNumber(accountNumber);
-        if (account.isEmpty())
+        Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
+        if (accountOpt.isEmpty())
             throw new RuntimeException("Account not found");
         else{
-            account.get().withdraw(amount);
-            accountRepository.save(account.get());
-            return account.get();
+            Account account = accountOpt.get();
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Amount must be greater than zero.");
+            }
+
+            if (amount.compareTo(account.getBalance()) > 0) {
+                throw new IllegalArgumentException("Insufficient funds.");
+            }
+
+            account.setBalance(account.getBalance().subtract(amount));
+            account.getTransactions().add(new Transaction(OperationType.WITHDRAWAL, amount, account.getBalance(), account));
+            accountRepository.save(account);
+            return account;
         }
     }
 

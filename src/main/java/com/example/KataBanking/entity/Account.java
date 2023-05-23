@@ -25,25 +25,4 @@ public class Account {
     private List<Transaction> transactions;
 
 
-    public void deposit(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero.");
-        }
-
-        balance = balance.add(amount);
-        transactions.add(new Transaction(OperationType.DEPOSIT, amount, balance, this));
-    }
-
-    public void withdraw(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero.");
-        }
-
-        if (amount.compareTo(balance) > 0) {
-            throw new IllegalArgumentException("Insufficient funds.");
-        }
-
-        balance = balance.subtract(amount);
-        transactions.add(new Transaction(OperationType.WITHDRAWAL, amount, balance, this));
-    }
 }

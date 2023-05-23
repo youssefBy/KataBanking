@@ -40,7 +40,7 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void deposit() {
+    void depositTest() {
         String accountNumber = "123456789";
         BigDecimal balance = BigDecimal.valueOf(0);
         BigDecimal amount = BigDecimal.valueOf(100);
@@ -60,7 +60,7 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void withdraw() {
+    void withdrawTest() {
         String accountNumber = "123456789";
         BigDecimal balance = BigDecimal.valueOf(100);
         BigDecimal amount = BigDecimal.valueOf(100);
