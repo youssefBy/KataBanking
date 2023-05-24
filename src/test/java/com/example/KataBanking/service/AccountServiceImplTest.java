@@ -150,17 +150,6 @@ class AccountServiceImplTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenNoAccount() {
-            //given
-            String accountNumber = "20";
-            BigDecimal amount = BigDecimal.valueOf(100);
-
-
-            //then
-            assertThrows(RuntimeException.class, () -> accountService.deposit(accountNumber, amount));
-        }
-
-        @Test
         void shouldWithdraw() {
 
             //given
@@ -168,10 +157,12 @@ class AccountServiceImplTest {
             BigDecimal balance = BigDecimal.valueOf(100);
             BigDecimal amount = BigDecimal.valueOf(100);
             List<Transaction> transactions = new ArrayList<>();
-            Account account = new Account();
-            account.setAccountNumber(accountNumber);
-            account.setBalance(balance);
-            account.setTransactions(transactions);
+            Account account = Account.builder()
+                    .accountNumber(accountNumber)
+                    .balance(balance)
+                    .transactions(transactions)
+                    .build();
+
             Optional<Account> optionalAccount = Optional.of(account);
 
             //when
@@ -182,6 +173,67 @@ class AccountServiceImplTest {
             assertEquals(account, result);
             assertEquals(balance.subtract(amount), account.getBalance());
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNoAccount() {
+            //given
+            String accountNumber = "20";
+            BigDecimal amount = BigDecimal.valueOf(100);
+
+            //then
+            assertThrows(RuntimeException.class, () -> accountService.deposit(accountNumber, amount));
+            assertThrows(RuntimeException.class, () -> accountService.withdraw(accountNumber, amount));
+            verify(accountRepository, never()).save(any());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenAmountNegative() {
+            //given
+            String accountNumber = "123456789";
+            BigDecimal balance = BigDecimal.valueOf(0);
+            BigDecimal amount = BigDecimal.valueOf(-100);
+            List<Transaction> transactions = new ArrayList<>();
+
+            Account account = Account.builder()
+                    .accountNumber(accountNumber)
+                    .balance(balance)
+                    .transactions(transactions)
+                    .build();
+
+
+            Optional<Account> optionalAccount = Optional.of(account);
+
+            when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(optionalAccount);
+
+            //then
+            assertThrows(IllegalArgumentException.class, () -> accountService.deposit(accountNumber, amount));
+            assertThrows(IllegalArgumentException.class, () -> accountService.withdraw(accountNumber, amount));
+            verify(accountRepository, never()).save(any());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenAmountHigherThanBalance() {
+            //given
+            String accountNumber = "123456789";
+            BigDecimal balance = BigDecimal.valueOf(0);
+            BigDecimal amount = BigDecimal.valueOf(100);
+            List<Transaction> transactions = new ArrayList<>();
+
+            Account account = Account.builder()
+                    .accountNumber(accountNumber)
+                    .balance(balance)
+                    .transactions(transactions)
+                    .build();
+
+
+            Optional<Account> optionalAccount = Optional.of(account);
+
+            when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(optionalAccount);
+
+            //then
+            assertThrows(IllegalArgumentException.class, () -> accountService.withdraw(accountNumber, amount));
+            verify(accountRepository, never()).save(any());
         }
     }
 }
