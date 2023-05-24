@@ -44,7 +44,7 @@ class OperationControllerTest {
 
         when(accountService.deposit(accountNumber, amount)).thenReturn(account);
 
-        mockMvc.perform(post("/api/v0/operations/deposit")
+        mockMvc.perform(post("/api/v1/operations/deposit")
                         .param("accountNumber", accountNumber)
                         .param("amount", amount.toString()))
                 .andExpect(status().isOk())
@@ -63,7 +63,7 @@ class OperationControllerTest {
 
         when(accountService.withdraw(accountNumber, amount)).thenReturn(account);
 
-        mockMvc.perform(post("/api/v0/operations/withdraw")
+        mockMvc.perform(post("/api/v1/operations/withdraw")
                         .param("accountNumber", accountNumber)
                         .param("amount", amount.toString()))
                 .andExpect(status().isOk())

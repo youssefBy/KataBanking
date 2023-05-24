@@ -11,28 +11,28 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v0/accounts")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AccountContoller {
 
     @Autowired
     private AccountService accountService;
 
-    @PostMapping()
+    @PostMapping("/v1/accounts")
     public ResponseEntity<Account> createAccount(
             @RequestBody Account account){
         Account newAccount = accountService.createAccount(account);
         return ResponseEntity.ok(newAccount);
     }
 
-    @GetMapping()
+    @GetMapping("/v1/accounts")
     public ResponseEntity<List<Account>> getAccounts(){
         return ResponseEntity.ok(accountService.getAccounts());
     }
 
 
 
-    @GetMapping("/{accountNumber}/transactions")
+    @GetMapping("/v1/accounts/{accountNumber}/transactions")
     public ResponseEntity<List<Transaction>> getAccountTransactions(
             @PathVariable String accountNumber) {
         List<Transaction> transactions = accountService.getAccountTransactions(accountNumber);

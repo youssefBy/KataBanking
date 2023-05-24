@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping("/api/v0/operations")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:4200")
 public class OperationController {
 
     @Autowired
     private AccountService accountService;
 
-    @PostMapping("/deposit")
+    @PostMapping("/v1/operations/deposit")
     public ResponseEntity<Account> depositAmount(
             @RequestParam("accountNumber") String accountNumber,
             @RequestParam("amount") BigDecimal amount) {
@@ -24,7 +24,7 @@ public class OperationController {
         return ResponseEntity.ok(account);
     }
 
-    @PostMapping("/withdraw")
+    @PostMapping("/v1/operations/withdraw")
     public ResponseEntity<Account> withdrawAmount(
             @RequestParam("accountNumber") String accountNumber,
             @RequestParam("amount") BigDecimal amount) {
