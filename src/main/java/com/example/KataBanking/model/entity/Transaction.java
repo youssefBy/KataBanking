@@ -1,4 +1,4 @@
-package com.example.KataBanking.entity;
+package com.example.KataBanking.model.entity;
 
 import com.example.KataBanking.enums.OperationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transaction")
-@Getter
-@Setter
+@Data
 @Builder()
 @AllArgsConstructor()
 @NoArgsConstructor()

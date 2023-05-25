@@ -1,17 +1,23 @@
 package com.example.KataBanking.service;
 
-import com.example.KataBanking.entity.Account;
-import com.example.KataBanking.entity.Transaction;
+import com.example.KataBanking.converter.AccountConverter;
+import com.example.KataBanking.converter.AccountDtoConverter;
+import com.example.KataBanking.converter.TransactionConverter;
+import com.example.KataBanking.exception.AccountNotFoundException;
+import com.example.KataBanking.model.dto.AccountDto;
+import com.example.KataBanking.model.dto.TransactionDto;
+import com.example.KataBanking.model.entity.Account;
+import com.example.KataBanking.model.entity.Transaction;
 import com.example.KataBanking.enums.OperationType;
 import com.example.KataBanking.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -20,20 +26,22 @@ public class AccountServiceImpl implements AccountService{
     private AccountRepository accountRepository;
 
     @Override
-    public Account createAccount(Account account) {
-        return accountRepository.save(account);
+    public AccountDto createAccount(AccountDto accountDto) {
+        Account account = AccountDtoConverter.newInstance().convert(accountDto);
+        return AccountConverter.newInstance().convert(accountRepository.save(account));
     }
 
     @Override
-    public List<Account> getAccounts() {
-        return accountRepository.findAll();
+    public List<AccountDto> getAccounts() {
+        List<Account> accountList = accountRepository.findAll();
+        return accountList.stream().map(account -> AccountConverter.newInstance().convert(account)).collect(Collectors.toList());
     }
 
     @Override
-    public Account deposit(String accountNumber, BigDecimal amount) {
+    public AccountDto deposit(String accountNumber, BigDecimal amount) throws AccountNotFoundException {
         Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
         if (accountOpt.isEmpty())
-            throw new RuntimeException("Account not found");
+            throw new AccountNotFoundException(accountNumber);
         else{
             Account account = accountOpt.get();
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -42,16 +50,16 @@ public class AccountServiceImpl implements AccountService{
 
             account.setBalance(account.getBalance().add(amount));
             account.getTransactions().add(new Transaction(OperationType.DEPOSIT, amount, account.getBalance(), account));
-            accountRepository.save(account);
-            return account;
+            Account accountUpdated = accountRepository.save(account);
+            return AccountConverter.newInstance().convert(accountUpdated);
         }
     }
 
     @Override
-    public Account withdraw(String accountNumber, BigDecimal amount) {
+    public AccountDto withdraw(String accountNumber, BigDecimal amount) throws AccountNotFoundException {
         Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
         if (accountOpt.isEmpty())
-            throw new RuntimeException("Account not found");
+            throw new AccountNotFoundException("Account not found");
         else{
             Account account = accountOpt.get();
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -64,18 +72,20 @@ public class AccountServiceImpl implements AccountService{
 
             account.setBalance(account.getBalance().subtract(amount));
             account.getTransactions().add(new Transaction(OperationType.WITHDRAWAL, amount, account.getBalance(), account));
-            accountRepository.save(account);
-            return account;
+            Account accountUpdated = accountRepository.save(account);
+            return AccountConverter.newInstance().convert(accountUpdated);
         }
     }
 
 
     @Override
-    public List<Transaction> getAccountTransactions(String accountNumber) {
+    public List<TransactionDto> getAccountTransactions(String accountNumber) {
         Optional<Account> account = accountRepository.findByAccountNumber(accountNumber);
         if (account.isEmpty())
             return Collections.emptyList();
-        else
-            return account.get().getTransactions();
+        else{
+            List<Transaction> transactions = account.get().getTransactions();
+            return transactions.stream().map(transaction -> TransactionConverter.newInstance().convert(transaction)).collect(Collectors.toList());
+        }
     }
 }

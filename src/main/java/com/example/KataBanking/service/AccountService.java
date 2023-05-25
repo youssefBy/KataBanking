@@ -1,19 +1,22 @@
 package com.example.KataBanking.service;
 
-import com.example.KataBanking.entity.Account;
-import com.example.KataBanking.entity.Transaction;
+import com.example.KataBanking.exception.AccountNotFoundException;
+import com.example.KataBanking.model.dto.AccountDto;
+import com.example.KataBanking.model.dto.TransactionDto;
+import com.example.KataBanking.model.entity.Account;
+import com.example.KataBanking.model.entity.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface AccountService {
 
-    Account createAccount(Account account);
-    List<Account> getAccounts();
+    AccountDto createAccount(AccountDto account);
+    List<AccountDto> getAccounts();
 
-    Account deposit(String accountNumber, BigDecimal amount);
+    AccountDto deposit(String accountNumber, BigDecimal amount) throws AccountNotFoundException;
 
-    Account withdraw(String accountNumber, BigDecimal amount);
-    List<Transaction> getAccountTransactions(String accountNumber);
+    AccountDto withdraw(String accountNumber, BigDecimal amount) throws AccountNotFoundException;
+    List<TransactionDto> getAccountTransactions(String accountNumber);
 
 }

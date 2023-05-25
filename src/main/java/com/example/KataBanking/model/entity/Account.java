@@ -1,6 +1,5 @@
-package com.example.KataBanking.entity;
+package com.example.KataBanking.model.entity;
 
-import com.example.KataBanking.enums.OperationType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,8 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "account")
-@Getter
-@Setter
+@Data
 @Builder()
 @AllArgsConstructor()
 @NoArgsConstructor()
@@ -25,6 +23,7 @@ public class Account {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Transaction> transactions;
+
 
 
 }

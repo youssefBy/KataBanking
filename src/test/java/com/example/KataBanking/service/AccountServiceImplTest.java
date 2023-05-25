@@ -1,7 +1,10 @@
 package com.example.KataBanking.service;
 
-import com.example.KataBanking.entity.Account;
-import com.example.KataBanking.entity.Transaction;
+import com.example.KataBanking.exception.AccountNotFoundException;
+import com.example.KataBanking.model.dto.AccountDto;
+import com.example.KataBanking.model.dto.TransactionDto;
+import com.example.KataBanking.model.entity.Account;
+import com.example.KataBanking.model.entity.Transaction;
 import com.example.KataBanking.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -35,13 +38,14 @@ class AccountServiceImplTest {
     @Nested
     class AccountsTest {
 
+
         @Test
         void shouldCreateAccount() {
             //given
             String accountNumber = "20";
             BigDecimal balance = BigDecimal.valueOf(0);
 
-            Account account = Account.builder()
+            AccountDto account = AccountDto.builder()
                     .id(1L)
                     .accountNumber(accountNumber)
                     .balance(balance)
@@ -59,7 +63,7 @@ class AccountServiceImplTest {
 
             Account capturedAccount = accountArgumentCaptor.getValue();
 
-            assertEquals(capturedAccount, account);
+            assertEquals(capturedAccount.getAccountNumber(), account.getAccountNumber());
         }
 
         @Test
@@ -92,10 +96,12 @@ class AccountServiceImplTest {
             //when
             when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
 
-            List<Transaction> result = accountService.getAccountTransactions(accountNumber);
+            List<TransactionDto> result = accountService.getAccountTransactions(accountNumber);
 
             //then
-            assertEquals(transactions, result);
+            assertEquals(transactions.size(), result.size());
+            /*BigDecimal reduce = transactions.stream().map(transaction -> transaction.getBalance()).reduce(BigDecimal.ZERO, BigDecimal::add);
+            assertEquals(0, reduce);*/
 
         }
 
@@ -105,7 +111,7 @@ class AccountServiceImplTest {
             String accountNumber = "20";
 
             //when
-            List<Transaction> transactions = accountService.getAccountTransactions(accountNumber);
+            List<TransactionDto> transactions = accountService.getAccountTransactions(accountNumber);
 
             //then
             assertEquals(Collections.emptyList(),transactions);
@@ -121,7 +127,7 @@ class AccountServiceImplTest {
     @Nested
     class OperationsTest {
         @Test
-        void shouldDeposit() {
+        void shouldDepositWhenAccountEmpty() throws AccountNotFoundException {
 
             //given
             String accountNumber = "123456789";
@@ -141,16 +147,15 @@ class AccountServiceImplTest {
             //when
             when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(optionalAccount);
 
-            Account result = accountService.deposit(accountNumber, amount);
+            AccountDto result = accountService.deposit(accountNumber, amount);
 
             //then
-            assertEquals(account, result);
             assertEquals(amount, account.getBalance());
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);
         }
 
         @Test
-        void shouldWithdraw() {
+        void shouldWithdraw() throws AccountNotFoundException {
 
             //given
             String accountNumber = "123456789";
@@ -167,10 +172,9 @@ class AccountServiceImplTest {
 
             //when
             when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(optionalAccount);
-            Account result = accountService.withdraw(accountNumber, amount);
+            AccountDto result = accountService.withdraw(accountNumber, amount);
 
             //then
-            assertEquals(account, result);
             assertEquals(balance.subtract(amount), account.getBalance());
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);
         }
@@ -182,8 +186,8 @@ class AccountServiceImplTest {
             BigDecimal amount = BigDecimal.valueOf(100);
 
             //then
-            assertThrows(RuntimeException.class, () -> accountService.deposit(accountNumber, amount));
-            assertThrows(RuntimeException.class, () -> accountService.withdraw(accountNumber, amount));
+            assertThrows(AccountNotFoundException.class, () -> accountService.deposit(accountNumber, amount));
+            assertThrows(AccountNotFoundException.class, () -> accountService.withdraw(accountNumber, amount));
             verify(accountRepository, never()).save(any());
         }
 

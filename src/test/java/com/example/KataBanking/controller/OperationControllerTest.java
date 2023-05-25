@@ -1,24 +1,25 @@
 package com.example.KataBanking.controller;
 
-import com.example.KataBanking.entity.Account;
+import com.example.KataBanking.model.dto.AccountDto;
+import com.example.KataBanking.model.entity.Account;
 import com.example.KataBanking.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest
 class OperationControllerTest {
 
     private MockMvc mockMvc;
@@ -36,10 +37,10 @@ class OperationControllerTest {
     }
 
     @Test
-    void depositAmountTest() throws Exception {
+    void should_deposit_amount_when_positif_amount() throws Exception {
         String accountNumber = "123456789";
         BigDecimal amount = BigDecimal.valueOf(100);
-        Account account = new Account();
+        AccountDto account = new AccountDto();
         account.setId(1L); // Set the account ID
 
         when(accountService.deposit(accountNumber, amount)).thenReturn(account);
@@ -55,10 +56,10 @@ class OperationControllerTest {
     }
 
     @Test
-    void withdrawAmountTest() throws Exception {
+    void should_withdraw_amount_test() throws Exception {
         String accountNumber = "123456789";
         BigDecimal amount = BigDecimal.valueOf(100);
-        Account account = new Account();
+        AccountDto account = new AccountDto();
         account.setId(2L); // Set the account ID
 
         when(accountService.withdraw(accountNumber, amount)).thenReturn(account);

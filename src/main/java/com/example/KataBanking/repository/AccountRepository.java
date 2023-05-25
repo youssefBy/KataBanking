@@ -1,6 +1,6 @@
 package com.example.KataBanking.repository;
 
-import com.example.KataBanking.entity.Account;
+import com.example.KataBanking.model.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
