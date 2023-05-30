@@ -9,9 +9,9 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 @Data
-@Builder()
-@AllArgsConstructor()
-@NoArgsConstructor()
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Account {
 
     @Id
@@ -21,7 +21,7 @@ public class Account {
     private String accountNumber;
     private BigDecimal balance;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
 

@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transaction")
 @Data
-@Builder()
-@AllArgsConstructor()
-@NoArgsConstructor()
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Transaction {
 
     @Id

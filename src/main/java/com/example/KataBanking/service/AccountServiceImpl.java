@@ -12,6 +12,7 @@ import com.example.KataBanking.enums.OperationType;
 import com.example.KataBanking.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class AccountServiceImpl implements AccountService{
         return AccountConverter.newInstance().convert(accountRepository.save(account));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<AccountDto> getAccounts() {
         List<Account> accountList = accountRepository.findAll();

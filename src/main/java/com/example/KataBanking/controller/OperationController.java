@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
 public class OperationController {
 
     @Autowired
