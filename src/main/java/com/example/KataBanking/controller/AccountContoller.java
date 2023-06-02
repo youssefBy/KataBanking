@@ -7,6 +7,7 @@ import com.example.KataBanking.model.entity.Transaction;
 import com.example.KataBanking.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class AccountContoller {
     private AccountService accountService;
 
     @PostMapping("/v1/accounts")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AccountDto> createAccount(
             @RequestBody AccountDto account){
         AccountDto newAccount = accountService.createAccount(account);
@@ -26,6 +28,7 @@ public class AccountContoller {
     }
 
     @GetMapping("/v1/accounts")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<AccountDto>> getAccounts(){
         return ResponseEntity.ok(accountService.getAccounts());
     }
@@ -33,6 +36,7 @@ public class AccountContoller {
 
 
     @GetMapping("/v1/accounts/{accountNumber}/transactions")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<List<TransactionDto>> getAccountTransactions(
             @PathVariable String accountNumber) {
         List<TransactionDto> transactions = accountService.getAccountTransactions(accountNumber);

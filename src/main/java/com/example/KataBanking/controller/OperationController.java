@@ -7,6 +7,7 @@ import com.example.KataBanking.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +21,7 @@ public class OperationController {
     private AccountService accountService;
 
     @PostMapping("/v1/operations/deposit")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<AccountDto> depositAmount(
             @RequestParam("accountNumber") String accountNumber,
             @RequestParam("amount") BigDecimal amount) {
@@ -34,6 +36,7 @@ public class OperationController {
     }
 
     @PostMapping("/v1/operations/withdraw")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<AccountDto> withdrawAmount(
             @RequestParam("accountNumber") String accountNumber,
             @RequestParam("amount") BigDecimal amount) throws AccountNotFoundException {
