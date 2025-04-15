@@ -8,8 +8,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -45,6 +45,7 @@ class AccountIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void should_create_account() throws Exception {
         AccountDto accountDto = getAccount();
 
@@ -61,6 +62,7 @@ class AccountIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void should_get_all_account() throws Exception {
 
         mockMvc.perform(get("/api/v1/accounts")
@@ -74,6 +76,7 @@ class AccountIntegrationTest {
 
 
     @Test
+    @WithMockUser(roles = "USER")
     void should_get_account_transactions_by_account_number() throws Exception {
 
         mockMvc.perform(get("/api/v1/accounts/{accountNumber}/transactions", 5)
